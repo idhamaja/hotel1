@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:hotels_1/pages/detail_page.dart';
+import 'package:hotels_1/services/database.dart';
 import 'package:hotels_1/services/widget_support.dart';
 
 class Home extends StatefulWidget {
@@ -9,33 +12,24 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  // Sample hotel data
-  final List<Map<String, dynamic>> hotels = [
-    {
-      'name': 'Hotel Fairmont',
-      'price': 'Rp.250.000',
-      'location': 'Near Main Market, Jakarta',
-      'image': 'images/hotel1.jpg',
-    },
-    {
-      'name': 'Hotel Bali',
-      'price': 'Rp.850.000',
-      'location': 'Near Beach, Kuta',
-      'image': 'images/hotel2.jpg',
-    },
-    {
-      'name': 'The Trans Luxury Hotel',
-      'price': 'Rp.850.000',
-      'location': 'Kota Bandung, Jawa Barat',
-      'image': 'images/hotel3.jpg',
-    },
-  ];
+  Stream? hotelStream;
+
+  getOnTheLoad() async {
+    hotelStream = await DatabaseMethods().getAllHotels();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getOnTheLoad();
+  }
 
   // Sample destination data
   final List<Map<String, dynamic>> destinations = [
     {
       'image': "images/mumbai.jpg",
-      'name': "Jembatan Suramadu",
+      'name': "C.Stone Hotel Suramadu",
       'hotelCount': "10 Hotels",
     },
     {
@@ -64,7 +58,7 @@ class _HomeState extends State<Home> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header section with search (unchanged)
+              // Header section with search
               Stack(
                 children: [
                   ClipRRect(
@@ -135,7 +129,7 @@ class _HomeState extends State<Home> {
               ),
               const SizedBox(height: 20.0),
 
-              // Hotels section (unchanged)
+              // Hotels section from Firestore
               const Padding(
                 padding: EdgeInsets.only(left: 20.0),
                 child: Text(
@@ -144,127 +138,11 @@ class _HomeState extends State<Home> {
                 ),
               ),
               const SizedBox(height: 20.0),
-              Container(
-                height: 350,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: hotels.length,
-                  itemBuilder: (context, index) {
-                    final hotel = hotels[index];
-                    return Container(
-                      width: MediaQuery.of(context).size.width * 0.75,
-                      margin: EdgeInsets.only(
-                        left: index == 0 ? 20.0 : 15.0,
-                        right: index == hotels.length - 1 ? 20.0 : 0,
-                        bottom: 5.0,
-                      ),
-                      child: Material(
-                        elevation: 4.0,
-                        borderRadius: BorderRadius.circular(30),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(30),
-                                  topRight: Radius.circular(30),
-                                ),
-                                child: Image.asset(
-                                  hotel['image'],
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                  height: 200,
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            hotel['name'],
-                                            style: const TextStyle(
-                                              fontSize: 18.0,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                        Text(
-                                          hotel['price'],
-                                          style: const TextStyle(
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.blue,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8.0),
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.location_on,
-                                          color: Colors.blue,
-                                          size: 20.0,
-                                        ),
-                                        const SizedBox(width: 5.0),
-                                        Expanded(
-                                          child: Text(
-                                            hotel['location'],
-                                            style: const TextStyle(
-                                              fontSize: 14.0,
-                                              color: Colors.grey,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10.0),
-                                    Row(
-                                      children: [
-                                        ...List.generate(
-                                          5,
-                                          (index) => const Icon(
-                                            Icons.star,
-                                            color: Colors.amber,
-                                            size: 18.0,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 5.0),
-                                        const Text(
-                                          "4.8 (120 reviews)",
-                                          style: TextStyle(
-                                            fontSize: 12.0,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
 
-              // Destinations section (CLEANED UP)
+              // Display hotels from Firestore
+              _buildHotelsFromFirestore(),
+
+              // Destinations section
               const SizedBox(height: 15.0),
               const Padding(
                 padding: EdgeInsets.only(left: 20.0),
@@ -288,6 +166,181 @@ class _HomeState extends State<Home> {
                 ),
               ),
               const SizedBox(height: 50.0),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Widget to display hotels from Firestore
+  Widget _buildHotelsFromFirestore() {
+    return StreamBuilder(
+      stream: hotelStream,
+      builder: (context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        if (!snapshot.hasData || snapshot.data.docs.isEmpty) {
+          return const Center(child: Text('No hotels found'));
+        }
+
+        return Container(
+          height: 280,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: snapshot.data.docs.length,
+            itemBuilder: (context, index) {
+              DocumentSnapshot ds = snapshot.data.docs[index];
+              Map<String, dynamic> data = ds.data() as Map<String, dynamic>;
+
+              String name = data['HotelName'] ?? 'No Name';
+              String price = data['HotelCharges']?.toString() ?? '0';
+              String location = data['HotelAddress'] ?? 'No Address';
+              String image = data['Image'] ?? 'images/hotel.jpg';
+
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailPage(
+                        bathroom: data['Bathroom'] ?? "false",
+                        description: data['HotelDescription'] ?? "",
+                        hdtv: data['HDTV'] ?? "false",
+                        kitchen: data['Kitchen'] ?? "false",
+                        price: price,
+                        wifi: data['WiFi'] ?? "false",
+                        name: name,
+                        image: image,
+                        location: location,
+                      ),
+                    ),
+                  );
+                },
+                child: _buildHotelCard(
+                  name: name,
+                  price: price,
+                  location: location,
+                  image: image,
+                  isFirst: index == 0,
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  // Hotel card widget - UPDATED TO MATCH THE IMAGE
+
+  Widget _buildHotelCard({
+    required String name,
+    required String price,
+    required String location,
+    required String image,
+    bool isFirst = false,
+  }) {
+    return Container(
+      margin: EdgeInsets.only(left: isFirst ? 20.0 : 15.0, right: 15.0),
+      width: 300,
+      child: Material(
+        elevation: 3.0,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // IMAGE
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+                child: Image.asset(
+                  image,
+                  height: 160,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      "images/hotel.jpg",
+                      height: 160,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    );
+                  },
+                ),
+              ),
+
+              // TEXT SECTION
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Hotel name + price in one row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            name,
+                            style: const TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                        Text(
+                          "\$$price",
+                          style: const TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8.0),
+
+                    // Location row
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.location_on,
+                          color: Colors.blue,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 4.0),
+                        Expanded(
+                          child: Text(
+                            location,
+                            style: const TextStyle(
+                              fontSize: 13.0,
+                              color: Colors.black54,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20.0),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -325,6 +378,14 @@ class _HomeState extends State<Home> {
                   height: 200,
                   width: double.infinity,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 200,
+                      width: double.infinity,
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.image_not_supported),
+                    );
+                  },
                 ),
               ),
               const SizedBox(height: 5.0),

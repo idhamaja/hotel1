@@ -1,6 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hotels_1/hotelowner/hotel_detail.dart';
+import 'package:hotels_1/pages/bottomNav.dart';
+import 'package:hotels_1/pages/detail_page.dart';
+import 'package:hotels_1/pages/home.dart';
 import 'package:hotels_1/pages/login.dart';
 import 'package:hotels_1/pages/signup.dart';
 import 'firebase_options.dart';
@@ -38,7 +41,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: HotelDetailPage(),
+      home: BottomNavPage(),
     );
   }
 }

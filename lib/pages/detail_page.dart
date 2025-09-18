@@ -2,7 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:hotels_1/services/widget_support.dart';
 
 class DetailPage extends StatefulWidget {
-  const DetailPage({super.key});
+  final String bathroom;
+  final String hdtv;
+  final String kitchen;
+  final String wifi;
+  final String price;
+  final String description;
+  final String name;
+  final String image;
+  final String location;
+
+  const DetailPage({
+    super.key,
+    required this.bathroom,
+    required this.hdtv,
+    required this.kitchen,
+    required this.wifi,
+    required this.price,
+    required this.description,
+    required this.name,
+    required this.image,
+    required this.location,
+  });
 
   @override
   State<DetailPage> createState() => _DetailPageState();
@@ -28,10 +49,7 @@ class _DetailPageState extends State<DetailPage> {
                         bottomLeft: Radius.circular(50),
                         bottomRight: Radius.circular(50),
                       ),
-                      child: Image.asset(
-                        "images/hotel1.jpg",
-                        fit: BoxFit.cover,
-                      ),
+                      child: Image.asset(widget.image, fit: BoxFit.cover),
                     ),
                   ),
                   GestureDetector(
@@ -60,12 +78,9 @@ class _DetailPageState extends State<DetailPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 20.0),
+                    Text(widget.name, style: AppWidget.headlineTextStyle(27.0)),
                     Text(
-                      "Hotel Fairmont",
-                      style: AppWidget.headlineTextStyle(27.0),
-                    ),
-                    Text(
-                      "\Rp.2.750.000",
+                      "\Rp. " + widget.price,
                       style: AppWidget.normalTextStyle(27.0),
                     ),
                     Divider(thickness: 2.0),
@@ -132,11 +147,12 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                     SizedBox(height: 5.0),
                     Text(
-                      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+                      widget.description,
                       style: AppWidget.normalTextStyle(16.0),
                     ),
                     SizedBox(height: 20.0), // Added extra space at the bottom
                     Material(
+                      color: Colors.white,
                       elevation: 3.0,
                       borderRadius: BorderRadius.circular(20),
                       child: Container(
