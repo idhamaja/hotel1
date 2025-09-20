@@ -99,7 +99,7 @@ class _HomeState extends State<Home> {
                         ),
                         const SizedBox(height: 25.0),
                         Text(
-                          "Howdy, Idham! Tell us where want to go",
+                          "How are you, Idham! \nTell us where want to go",
                           style: AppWidget.whiteTextStyle(24.0),
                         ),
                         Container(
@@ -219,6 +219,7 @@ class _HomeState extends State<Home> {
                         name: name,
                         image: image,
                         location: location,
+                        hotelid: ds.id,
                       ),
                     ),
                   );
@@ -305,7 +306,7 @@ class _HomeState extends State<Home> {
                           ),
                         ),
                         Text(
-                          "\$$price",
+                          "\Rp. $price",
                           style: const TextStyle(
                             fontSize: 16.0,
                             fontWeight: FontWeight.bold,

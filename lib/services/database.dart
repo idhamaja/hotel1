@@ -19,4 +19,30 @@ class DatabaseMethods {
   Future<Stream<QuerySnapshot>> getAllHotels() async {
     return await FirebaseFirestore.instance.collection("Hotel").snapshots();
   }
+
+  Future addUserBooking(
+    Map<String, dynamic> userInfoMap,
+    String id,
+    String bookid,
+  ) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(id)
+        .collection("Booking")
+        .doc(bookid)
+        .set(userInfoMap);
+  }
+
+  Future addHotelOwnerBooking(
+    Map<String, dynamic> userInfoMap,
+    String id,
+    String bookid,
+  ) async {
+    return await FirebaseFirestore.instance
+        .collection("Hotel")
+        .doc(id)
+        .collection("Booking")
+        .doc(bookid)
+        .set(userInfoMap);
+  }
 }
